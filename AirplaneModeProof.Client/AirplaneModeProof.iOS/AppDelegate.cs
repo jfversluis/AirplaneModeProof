@@ -1,4 +1,5 @@
-﻿using Foundation;
+﻿using FFImageLoading.Forms.Touch;
+using Foundation;
 using UIKit;
 
 namespace AirplaneModeProof.iOS
@@ -19,6 +20,8 @@ namespace AirplaneModeProof.iOS
 		public override bool FinishedLaunching(UIApplication app, NSDictionary options)
 		{
 			global::Xamarin.Forms.Forms.Init();
+			CachedImageRenderer.Init();
+
 			LoadApplication(new Core.App());
 
 			return base.FinishedLaunching(app, options);

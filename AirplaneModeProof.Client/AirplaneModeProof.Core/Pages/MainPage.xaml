@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
              x:Class="AirplaneModeProof.Core.Pages.MainPage"
              NavigationPage.BackButtonTitle="" Title="Avengers Assemble">
     <ListView x:Name="SuperheroList" ItemsSource="{Binding Superheroes}"
@@ -10,7 +11,16 @@
               ItemSelected="Handle_ItemSelected">
         <ListView.ItemTemplate>
             <DataTemplate>
-                <ImageCell Text="{Binding Name}" ImageSource="{Binding Photo}" />
+                <ViewCell>
+                    <StackLayout Orientation="Horizontal">
+                        <ffimageloading:CachedImage Source="{Binding Photo}"
+                                                    CacheType="Disk" CacheDuration="90"
+                                                    DownsampleToViewSize="true"
+                                                    WidthRequest="60" HeightRequest="60"/>
+
+                        <Label Text="{Binding Name}" Margin="0,10" />
+                    </StackLayout>
+                </ViewCell>
             </DataTemplate>
         </ListView.ItemTemplate>
     </ListView>

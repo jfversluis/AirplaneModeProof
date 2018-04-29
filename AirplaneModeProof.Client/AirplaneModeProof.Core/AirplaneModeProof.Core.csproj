@@ -9,15 +9,16 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="PropertyChanged.Fody" Version="2.5.4" />
     <PackageReference Include="Refit" Version="4.3.0" />
+    <PackageReference Include="Xamarin.FFImageLoading.Forms" Version="2.3.6" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\" />
     <Folder Include="Models\" />
     <Folder Include="Pages\" />
     <Folder Include="PageModels\" />
+    <Folder Include="Interfaces\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Behaviors\ListViewSelectedItemBehavior.cs" />
-    <Compile Remove="Interfaces\IBackendService.cs" />
   </ItemGroup>
 </Project>
