@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AirplaneModeProof.Core.Pages.SuperheroDetailsPage"
+             NavigationPage.BackButtonTitle="" Title="{Binding Superhero.Name}">
+    <ScrollView>
+        <StackLayout Margin="10,10">
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                <Label Text="{Binding Superhero.RealName}" HorizontalOptions="Center" />
+                <Label Text="{Binding Superhero.Height, StringFormat='({0})'}" HorizontalOptions="Center" />
+            </StackLayout>
+            
+            <Image Source="{Binding Superhero.Photo}" HorizontalOptions="Center" />
+            
+            <Label Text="Powers" FontAttributes="Bold" HorizontalOptions="Center" TextColor="#ED1120" />
+            <Label Text="{Binding Superhero.Power}" HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+            
+            <Label Text="Abilities" FontAttributes="Bold" HorizontalOptions="Center" TextColor="#ED1120" />
+            <Label Text="{Binding Superhero.Abilities}" HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+            
+            <Label Text="Groups" FontAttributes="Bold" HorizontalOptions="Center" TextColor="#ED1120" />
+            <Label Text="{Binding Superhero.Groups}" HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+            
+            <Button Text="Appeared in comics..." BackgroundColor="#ED1120"
+                    Margin="20,10" TextColor="White" Clicked="Handle_Clicked" />
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
