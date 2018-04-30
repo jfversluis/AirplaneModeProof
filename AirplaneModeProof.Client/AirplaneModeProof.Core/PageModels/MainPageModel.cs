@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Acr.UserDialogs;
@@ -40,21 +41,22 @@ namespace AirplaneModeProof.Core.PageModels
 					.AlertAsync("No internet connection available", "Nope, sorry!", "OK");
 			}
 
-			await LoadSuperheroes();
+			LoadSuperheroes();
 
 			IsLoading = false;
 		}
 
-		private async Task LoadSuperheroes()
+		private void LoadSuperheroes()
 		{
-			Superheroes.Clear();
-
-			var heroes = await _backendService.GetSuperheroes();
-
-			foreach(var hero in heroes)
+			_backendService.GetSuperheroes().Subscribe((superheroes) =>
 			{
-				Superheroes.Add(hero);
-			}
+				Superheroes.Clear();
+
+				foreach (var hero in superheroes)
+				{
+					Superheroes.Add(hero);
+				}
+			});
 		}
 	}
 }

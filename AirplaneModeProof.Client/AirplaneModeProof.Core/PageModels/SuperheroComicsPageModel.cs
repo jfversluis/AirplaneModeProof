@@ -1,4 +1,5 @@
-﻿using Acr.UserDialogs;
+﻿using System;
+using Acr.UserDialogs;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -43,21 +44,26 @@ namespace AirplaneModeProof.Core.PageModels
 					.AlertAsync("No internet connection available", "Nope, sorry!", "OK");
 			}
 
-			await LoadSuperheroes();
+			LoadSuperheroes();
 
 			IsLoading = false;
 		}
 
-		private async Task LoadSuperheroes()
+		private void LoadSuperheroes()
 		{
-			Comics.Clear();
-
-			var comics = await _backendService.GetComicsForSuperhero(Superhero.Id);
-
-			foreach (var comic in comics)
+			_backendService.GetComicsForSuperhero(Superhero.Id).Subscribe((comics) =>
 			{
-				Comics.Add(comic);
-			}
+				Comics.Clear();
+
+				foreach (var comic in comics)
+				{
+					Comics.Add(comic);
+				}
+			}, async (ex) =>
+			{
+				await UserDialogs.Instance
+					.AlertAsync("Something bad happened", "Nope, sorry!", "OK");
+			});
 		}
 	}
 }

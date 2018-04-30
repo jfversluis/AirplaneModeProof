@@ -1,4 +1,5 @@
 using AirplaneModeProof.Core.Pages;
+using Akavache;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -10,6 +11,8 @@ namespace AirplaneModeProof.Core
 		public App()
 		{
 			InitializeComponent();
+
+			BlobCache.ApplicationName = "AirplaneModeProofApp";
 
 			MainPage = new NavigationPage(new MainPage())
 			{
