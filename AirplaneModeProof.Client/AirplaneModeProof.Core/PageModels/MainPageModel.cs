@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Acr.UserDialogs;
 using AirplaneModeProof.Core.Models;
 using AirplaneModeProof.Core.Services;
+using Plugin.Connectivity;
 using Xamarin.Forms;
 
 namespace AirplaneModeProof.Core.PageModels
@@ -32,6 +33,12 @@ namespace AirplaneModeProof.Core.PageModels
 		private async Task RefreshList()
 		{
 			IsLoading = true;
+
+			if (!CrossConnectivity.Current.IsConnected)
+			{
+				await UserDialogs.Instance
+					.AlertAsync("No internet connection available", "Nope, sorry!", "OK");
+			}
 
 			await LoadSuperheroes();
 
