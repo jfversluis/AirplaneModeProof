@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AirplaneModeProof.Core.Interfaces;
 using AirplaneModeProof.Core.Models;
 using Akavache;
+using Plugin.Connectivity;
 using Refit;
 
 namespace AirplaneModeProof.Core.Services
@@ -11,7 +12,7 @@ namespace AirplaneModeProof.Core.Services
 	public class BackendService
 	{
 		private readonly IBackendService _restService;
-		private readonly IBlobCache _cache = BlobCache.LocalMachine;
+		private readonly IBlobCache _cache = BlobCache.UserAccount;
 
 		private const string ApiBaseUrl = "http://airplanemodeproof-api.azurewebsites.net/api/";
 
@@ -22,9 +23,13 @@ namespace AirplaneModeProof.Core.Services
 
 		public IObservable<IEnumerable<Superhero>> GetSuperheroes()
 		{
+			
 			return _cache.GetAndFetchLatest("superheroes",
 				async () => await _restService.GetSuperheroes(), (offset) =>
 			{
+				if (!CrossConnectivity.Current.IsConnected)
+					return false;
+				
 				// return a boolean to indicate the cache is invalidated
 				return (DateTimeOffset.Now - offset).Hours > 24;
 			});

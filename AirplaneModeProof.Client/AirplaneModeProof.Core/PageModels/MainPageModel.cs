@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using Acr.UserDialogs;
 using AirplaneModeProof.Core.Models;
 using AirplaneModeProof.Core.Services;
-using Plugin.Connectivity;
 using Xamarin.Forms;
 
 namespace AirplaneModeProof.Core.PageModels
@@ -22,7 +19,7 @@ namespace AirplaneModeProof.Core.PageModels
 		{
 			get
 			{
-				return _refreshListCommand ?? (_refreshListCommand = new Command(async () => await RefreshList()));
+				return _refreshListCommand ?? (_refreshListCommand = new Command(() => RefreshList()));
 			}
 		}
 
@@ -31,15 +28,9 @@ namespace AirplaneModeProof.Core.PageModels
 			RefreshListCommand.Execute(null);
 		}
 
-		private async Task RefreshList()
+		private void RefreshList()
 		{
 			IsLoading = true;
-
-			if (!CrossConnectivity.Current.IsConnected)
-			{
-				await UserDialogs.Instance
-					.AlertAsync("No internet connection available", "Nope, sorry!", "OK");
-			}
 
 			LoadSuperheroes();
 

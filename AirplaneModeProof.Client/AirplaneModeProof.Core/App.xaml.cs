@@ -28,7 +28,7 @@ namespace AirplaneModeProof.Core
 
 		protected override void OnSleep()
 		{
-			// Handle when your app sleeps
+			BlobCache.Shutdown().Wait();
 		}
 
 		protected override void OnResume()
