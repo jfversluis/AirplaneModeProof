@@ -38,12 +38,6 @@ namespace AirplaneModeProof.Core.PageModels
 		{
 			IsLoading = true;
 
-			if (!CrossConnectivity.Current.IsConnected)
-			{
-				await UserDialogs.Instance
-					.AlertAsync("No internet connection available", "Nope, sorry!", "OK");
-			}
-
 			LoadSuperheroes();
 
 			IsLoading = false;
@@ -53,12 +47,15 @@ namespace AirplaneModeProof.Core.PageModels
 		{
 			_backendService.GetComicsForSuperhero(Superhero.Id).Subscribe((comics) =>
 			{
-				Comics.Clear();
-
-				foreach (var comic in comics)
+				Device.BeginInvokeOnMainThread(() =>
 				{
-					Comics.Add(comic);
-				}
+					Comics.Clear();
+
+					foreach (var comic in comics)
+					{
+						Comics.Add(comic);
+					}
+				});
 			}, async (ex) =>
 			{
 				await UserDialogs.Instance

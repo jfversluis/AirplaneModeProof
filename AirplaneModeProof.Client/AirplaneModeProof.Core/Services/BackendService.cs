@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using AirplaneModeProof.Core.Interfaces;
 using AirplaneModeProof.Core.Models;
 using Akavache;
 using Plugin.Connectivity;
+using Polly;
 using Refit;
 
 namespace AirplaneModeProof.Core.Services
@@ -18,18 +20,18 @@ namespace AirplaneModeProof.Core.Services
 
 		public BackendService()
 		{
-			_restService = RestService.For<IBackendService>(ApiBaseUrl); 
+			_restService = RestService.For<IBackendService>(ApiBaseUrl);
 		}
 
 		public IObservable<IEnumerable<Superhero>> GetSuperheroes()
 		{
-			
+
 			return _cache.GetAndFetchLatest("superheroes",
 				async () => await _restService.GetSuperheroes(), (offset) =>
 			{
 				if (!CrossConnectivity.Current.IsConnected)
 					return false;
-				
+
 				// return a boolean to indicate the cache is invalidated
 				return (DateTimeOffset.Now - offset).Hours > 24;
 			});
@@ -47,15 +49,22 @@ namespace AirplaneModeProof.Core.Services
 
 		private async Task<IEnumerable<Comic>> GetComicsForSuperheroRemote(int id)
 		{
-			try
-			{
-				return await _restService.GetComicsForSuperhero(id);
-			}
-			catch (ApiException ex)
-			{
-				Console.WriteLine($"Something bad happened! Status code: {ex.StatusCode}");
-				throw;
-			}
+			return await Policy
+					 .Handle<ApiException>(ex => ex.StatusCode != HttpStatusCode.NotFound)
+					 .WaitAndRetryAsync
+					 (
+						retryCount: 3,
+						sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+						onRetry: (ex, time) =>
+						{
+							Console.WriteLine($"Something went wrong: {ex.Message}, retrying...");
+						}
+					 )
+					 .ExecuteAsync(async () =>
+					 {
+						 Console.WriteLine($"Trying to fetch remote data...");
+						 return await _restService.GetComicsForSuperhero(id);
+					 });
 		}
 	}
 }
