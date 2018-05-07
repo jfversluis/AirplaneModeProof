@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AirplaneModeProof.Core.Interfaces;
 using AirplaneModeProof.Core.Models;
@@ -13,6 +14,8 @@ namespace AirplaneModeProof.Core.Services
 {
 	public class BackendService
 	{
+		private readonly HttpClient _customHttpClient;
+		private readonly EtagHttpClientHandler _customHttpClientHandler;
 		private readonly IBackendService _restService;
 		private readonly IBlobCache _cache = BlobCache.UserAccount;
 
@@ -20,7 +23,13 @@ namespace AirplaneModeProof.Core.Services
 
 		public BackendService()
 		{
-			_restService = RestService.For<IBackendService>(ApiBaseUrl);
+			_customHttpClientHandler = new EtagHttpClientHandler();
+			_customHttpClient = new HttpClient(_customHttpClientHandler)
+			{
+				BaseAddress = new Uri(ApiBaseUrl)
+			};
+
+			_restService = RestService.For<IBackendService>(_customHttpClient);
 		}
 
 		public IObservable<IEnumerable<Superhero>> GetSuperheroes()
@@ -50,21 +59,21 @@ namespace AirplaneModeProof.Core.Services
 		private async Task<IEnumerable<Comic>> GetComicsForSuperheroRemote(int id)
 		{
 			return await Policy
-					 .Handle<ApiException>(ex => ex.StatusCode != HttpStatusCode.NotFound)
-					 .WaitAndRetryAsync
-					 (
+					.Handle<ApiException>(ex => ex.StatusCode != HttpStatusCode.NotFound && ex.StatusCode != HttpStatusCode.NotModified)
+					.WaitAndRetryAsync
+					(
 						retryCount: 3,
 						sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
 						onRetry: (ex, time) =>
 						{
 							Console.WriteLine($"Something went wrong: {ex.Message}, retrying...");
 						}
-					 )
-					 .ExecuteAsync(async () =>
-					 {
+					)
+					.ExecuteAsync(async () =>
+					{
 						 Console.WriteLine($"Trying to fetch remote data...");
 						 return await _restService.GetComicsForSuperhero(id);
-					 });
+					});
 		}
 	}
 }

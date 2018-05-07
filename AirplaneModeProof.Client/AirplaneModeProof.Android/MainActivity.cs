@@ -1,4 +1,5 @@
-﻿using Android.App;
+﻿using Acr.UserDialogs;
+using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using FFImageLoading.Forms.Droid;
@@ -17,6 +18,7 @@ namespace AirplaneModeProof.Droid
 
 			global::Xamarin.Forms.Forms.Init(this, bundle);
 			CachedImageRenderer.Init(true);
+			UserDialogs.Init(this);
 
 			LoadApplication(new AirplaneModeProof.Core.App());
 		}
